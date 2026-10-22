@@ -1,0 +1,30 @@
+name: Poll
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: poll
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Write style examples
+        run: printf '%s' "$EXAMPLES" > examples.txt
+        env:
+          EXAMPLES: ${{ secrets.EXAMPLES }}
+      - run: uv run python runner.py poll
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+          LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
+          LINKEDIN_TOKEN_EXPIRES: ${{ secrets.LINKEDIN_TOKEN_EXPIRES }}
+          LI_API_VERSION: ${{ secrets.LI_API_VERSION }}

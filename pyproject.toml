@@ -1,0 +1,25 @@
+[project]
+name = "ai-news-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=2.0.0",
+    "apscheduler>=3.11.3",
+    "fastapi>=0.158.1",
+    "feedparser>=6.0.14",
+    "google-genai>=2.32.0",
+    "httpx>=0.28.1",
+    "mcp<2",
+    "python-dotenv>=1.2.4",
+    "python-multipart>=0.0.32",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[project.scripts]
+ai-news-bot = "ai_news_bot:main"
+
+[build-system]
+requires = ["uv_build>=0.12.24,<0.13.0"]
+build-backend = "uv_build"
