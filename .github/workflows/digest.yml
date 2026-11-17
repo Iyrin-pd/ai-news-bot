@@ -2,12 +2,17 @@ name: Digest
 
 on:
   schedule:
-    - cron: "47 4 * * 1,3,5"
-  workflow_dispatch:
+    - cron: "0 1 * * 1,3,5"   # 6:30 AM IST. Starts early, the code waits until 9:30 AM sharp
+  workflow_dispatch:           # manual run: sends immediately
+
+concurrency:
+  group: digest
+  cancel-in-progress: false
 
 jobs:
   digest:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -16,7 +21,8 @@ jobs:
         run: printf '%s' "$EXAMPLES" > examples.txt
         env:
           EXAMPLES: ${{ secrets.EXAMPLES }}
-      - run: uv run python runner.py digest
+      - name: Send digest
+        run: uv run python runner.py ${{ github.event_name == 'schedule' && 'scheduled' || 'digest' }}
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
@@ -27,3 +33,4 @@ jobs:
           LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
           LINKEDIN_TOKEN_EXPIRES: ${{ secrets.LINKEDIN_TOKEN_EXPIRES }}
           LI_API_VERSION: ${{ secrets.LI_API_VERSION }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
